@@ -71,7 +71,7 @@ def _calculate_num_points_in_gt(
         else:
             v_path = pc_info["velodyne_path"]
         points_v = np.fromfile(v_path, dtype=np.float32, count=-1).reshape(
-            [-1, num_features]
+            (-1, num_features)
         )
         rect = calib["R0_rect"]
         Trv2c = calib["Tr_velo_to_cam"]
@@ -174,9 +174,11 @@ def _create_reduced_point_cloud(data_path, info_path, save_path=None, back=False
             points_v, rect, Trv2c, P2, image_info["image_shape"]
         )
         if save_path is None:
-            Path.mkdir(v_path.parent.parent / (v_path.parent.stem + "_reduced"))
+            default_path = Path(v_path.parent.parent / (v_path.parent.stem + "_reduced"))
+            if not default_path.exists():
+                default_path.mkdir(parents=True)
             save_filename = (
-                v_path.parent.parent / (v_path.parent.stem + "_reduced") / v_path.name
+                str(default_path / v_path.name)
             )
             # save_filename = str(v_path) + '_reduced'
             if back:
